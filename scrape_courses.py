@@ -1,9 +1,11 @@
-import json
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import json
 
 def scrape_subjects(base_url):
   print("Scraping subjects...")
@@ -51,32 +53,38 @@ def scrape_subjects(base_url):
 
 def scrape_courses(subject_url):
   print(f"Scraping courses for {subject_url}...")
+  options = webdriver.ChromeOptions()
+  options.add_argument("--headless") 
 
-  driver = webdriver.Chrome()
+  driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
   driver.get(subject_url)
 
-  # Wait for course rows to be present
-  WebDriverWait(driver, 10).until(
-      EC.presence_of_all_elements_located((By.TAG_NAME, 'tr')) 
-  )
-
-  course_rows = driver.find_elements(By.TAG_NAME, 'tr')
   courses = []
-  for course_row in course_rows:
-    try:
-      course_data = {}
 
-      # Extract course code and URL
-      course_code_element = course_row.find_elements(By.TAG_NAME, 'a')[0]
-      course_data['code'] = course_code_element.text
-      course_data['url'] = course_code_element.get_attribute('href')
+  try:
+    # Wait for course rows to be present
+    WebDriverWait(driver, 10).until(
+      EC.presence_of_all_elements_located((By.TAG_NAME, 'tr')) 
+    )
 
-      # Extract course title
-      course_title_element = course_row.find_elements(By.TAG_NAME, 'a')[1]
-      course_data['title'] = course_title_element.text
-      courses.append(course_data)
-    except:
-      pass
+    course_rows = driver.find_elements(By.TAG_NAME, 'tr')
+    for course_row in course_rows:
+      try:
+        course_data = {}
+
+        # Extract course code and URL
+        course_code_element = course_row.find_elements(By.TAG_NAME, 'a')[0]
+        course_data['code'] = course_code_element.text
+        course_data['url'] = course_code_element.get_attribute('href')
+
+        # Extract course title
+        course_title_element = course_row.find_elements(By.TAG_NAME, 'a')[1]
+        course_data['title'] = course_title_element.text
+        courses.append(course_data)
+      except:
+        pass
+  except:
+    pass
 
   driver.quit()
   print(f"Finished scraping courses for {subject_url}.")
@@ -84,8 +92,10 @@ def scrape_courses(subject_url):
 
 def scrape_course_details(course_url):
   print(f"Scraping course details for {course_url}...")
+  options = webdriver.ChromeOptions()
+  options.add_argument("--headless") 
 
-  driver = webdriver.Chrome()
+  driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
   driver.get(course_url)
 
   # Wait for description element to be present
