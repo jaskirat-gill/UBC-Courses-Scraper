@@ -115,17 +115,16 @@ def scrape_course_details(course_url):
 
 def main():
   base_url = "https://courses.students.ubc.ca/browse-courses"
-  #subject_links = scrape_subjects(base_url)
+  subject_links = scrape_subjects(base_url)
 
   all_courses = []
-  #for subject_link in tsubject_links:
-  #courses = scrape_courses(subject_link)
-  #print(courses)
-  #for course in courses:
-  course = {'code': 'AANB_V 500', 'url': 'https://courses.students.ubc.ca/browse-courses/course/COURSE_DEFINITION-3-18_20240901', 'title': 'Graduate Seminar'}
-  course_details = scrape_course_details(course['url'])
-  course.update(course_details)
-  all_courses.append(course)
+  for subject_link in subject_links:
+    courses = scrape_courses(subject_link)
+  
+  for course in courses:
+    course_details = scrape_course_details(course['url'])
+    course.update(course_details)
+    all_courses.append(course)
 
   with open('ubc_courses.json', 'w') as jsonfile:
       json.dump(all_courses, jsonfile, indent=4)
