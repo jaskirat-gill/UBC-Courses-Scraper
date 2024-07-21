@@ -15,6 +15,15 @@ def scrape_subjects(base_url):
   driver = webdriver.Chrome()
   driver.get(base_url)
 
+  # Uncomment for okanagon campus
+  # campus_select = WebDriverWait(driver, 20).until(
+  #     EC.presence_of_element_located((By.CSS_SELECTOR, '#menu-campus-session-form > div > div > div.menu-campus-session__tabs > button:nth-child(1)'))
+  # )
+  # campus_select.click()
+  # campuses_select = WebDriverWait(driver, 20).until(
+  #     EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#menu-links-campus > button:nth-child(1)'))
+  # )
+  # campuses_select[0].click()
   # Find all alphabet buttons
   alphabet_buttons = WebDriverWait(driver, 20).until(
       EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.subjects-table-filters__btn'))
